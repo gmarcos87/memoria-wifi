@@ -1,0 +1,47 @@
+#!/usr/bin/lua
+
+local json = require 'luci.json'
+local libuci = require("uci")
+
+local config = libuci:cursor()
+print ("Content-type: application/json\n")
+local ip = os.getenv('REMOTE_ADDR')
+
+local function obtenerEstado(ip)
+    local command = "cat /etc/config/wireless | grep memoria | wc -l 2>/dev/null"
+    fd = io.popen(command)
+    local output = fd:read('*a')
+    fd:close()
+    return string.sub(output, 1, 1)
+end
+
+local function activar()
+	config:set('wireless', 'memoria', 'wifi-iface')
+    config:set('wireless', 'memoria', 'mode', 'ap')
+    config:set('wireless', 'memoria', 'device', 'radio0')
+    config:set('wireless', 'memoria', 'ssid', 'Memoria Verdad Justicia')
+    config:set('wireless', 'memoria', 'encryption', 'none')
+    config:set('wireless', 'memoria', 'isolate', '1')
+    config:set('wireless', 'memoria', 'network', 'public')
+    config:commit('wireless')
+    config:save('wireless') 
+end
+
+local function borrar()
+    config:delete('wireless', 'memoria')
+    config:commit('wireless')
+    config:save('wireless') 
+end
+
+local status = obtenerEstado()
+
+if ( status == '0') then
+    activar()
+else
+    borrar()
+end
+
+io.popen('wifi down radio0; wifi up radio0'):close()
+
+local response = { status = status }
+print(json.encode(response))

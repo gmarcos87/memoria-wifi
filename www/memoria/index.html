@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24 de marzo</title>
+</head>
+<style>
+    body {
+        text-align: center;
+        background-color: #f7f9f5;
+        padding: 40px;
+        height: 100vh;
+    }
+    img { 
+        max-width: 80%;
+    }
+    .mensaje {
+        position: fixed;
+        width: 100%;
+        max-width: 220px;
+        padding: 20px;
+        bottom: 20px;
+        left: calc(50% - 150px);
+        background-color: rgba(0,0,0,0.8);
+        color: #f7f9f5;
+        transition: all 250ms ease;
+        opacity: 1;
+        border-radius: 5px;
+    }
+
+    .oculto {
+        opacity: 0;
+    }
+</style>
+<body>
+    <img src="nunca-mas.gif" />
+    <h2>Si no podemos pintar las paredes pintaremos el aire.</h2>
+    <p>24 de marzo de 2020</p>
+    <div class="mensaje oculto" id='mensaje'>
+        El mensaje está <span id="status"></span>
+    </div>
+    <script>
+        function memorizar() {
+            var box = document.getElementById('mensaje')
+            var estado = document.getElementById('status')
+            fetch('http://thisnode.info/cgi-bin/memo')
+                .then(function(res) { return res.json() })
+                .then(function(data) {
+                    if (data.status === '0') {
+                        estado.innerText ='activo'
+                        box.classList.remove('oculto')
+                        setTimeout(function() { box.classList.add('oculto')}, 2000);
+                        return
+                    } 
+                    estado.innerText ='desactivado'
+                    box.classList.remove('oculto')
+                    setTimeout(function() { box.classList.add('oculto')}, 2000);
+                })
+        }
+        memorizar()
+    </script>
+</body>
+</html>
